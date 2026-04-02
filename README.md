@@ -1,40 +1,29 @@
-# 🤖 Telegram-бот «Фотостудия Денисенко»
+# MAX-бот «Фотостудия Денисенко»
 
-Продакшн-ориентированный Telegram-бот на Telegraf с чистой модульной архитектурой: контент отделен от логики, webhook защищен secret token, сессии управляются middleware с TTL.
-
-## Что улучшено
-
-- Устранен архитектурный монолит: логика разделена на `config / content / handlers / middlewares / ui`.
-- Приведены в порядок точки входа для Vercel и локального запуска.
-- Добавлена централизованная валидация переменных окружения.
-- Улучшен webhook-скрипт: использует Telegram API через JSON, поддерживает `secret_token`.
-- Добавлена единая обработка ошибок в боте (`bot.catch`), чтобы падения не ломали сценарии.
-- Сессии хранятся в memory-store с автоматической очисткой устаревших данных.
+Продакшн-ориентированный бот для мессенджера MAX на `@maxhub/max-bot-api`: меню/контент — как в Telegram-версии, а состояние пользователя хранится в in-memory с TTL.
 
 ## Структура проекта
 
 ```text
 denisenko-bot/
 ├── api/
-│   └── webhook.js                 # Vercel serverless endpoint
+│   └── webhook.js                 # Vercel serverless endpoint (MAX Webhook)
 ├── scripts/
-│   └── set-webhook.js             # Регистрация webhook в Telegram
+│   └── set-subscriptions-max.js  # POST /subscriptions для MAX
 ├── src/
-│   ├── bot.js                     # Инициализация бота + middleware + handlers
-│   ├── config/
-│   │   └── env.js                 # Валидация env переменных
-│   ├── content/
-│   │   └── messages.js            # Тексты и контентные блоки
+│   └── content/
+│       └── messages.js            # HTML-контент и тексты
+├── src/max/
+│   ├── bot.js                     # Инициализация MAX Bot
 │   ├── handlers/
-│   │   └── registerHandlers.js    # Роутинг команд/кнопок
+│   │   └── registerHandlers.js  # Роутинг команд/кнопок
 │   ├── middlewares/
-│   │   └── memorySession.js       # In-memory сессии + TTL cleanup
-│   └── ui/
-│       └── keyboards.js           # Кнопки, inline-клавиатуры, регионы
-├── bot.js                         # Обратная совместимость (реэкспорт src/bot)
-├── webhook.js                     # Обратная совместимость (реэкспорт api/webhook)
-├── local.js                       # Локальный long polling запуск
-├── set-webhook.js                 # Обратная совместимость (реэкспорт scripts/...)
+│   │   └── memorySession.js     # In-memory сессии + TTL cleanup
+│   ├── ui/
+│   │   └── keyboards.js         # Inline клавиатуры и payload'ы
+│   └── utils/
+│       └── sendImages.js        # uploadImage + кэш вложений
+├── max-local.js                   # Локальный long polling запуск
 ├── vercel.json
 ├── .env.example
 └── package.json
@@ -52,8 +41,8 @@ cp .env.example .env
 - `BOT_TOKEN`
 
 Опциональные:
-- `VERCEL_URL` (нужен для скрипта регистрации webhook)
-- `WEBHOOK_SECRET` (рекомендуется для защиты webhook)
+- `VERCEL_URL` (нужен для `npm run set-subscriptions`)
+- `MAX_WEBHOOK_SECRET` (рекомендуется для защиты MAX webhook)
 
 ## Локальный запуск
 
@@ -69,28 +58,28 @@ npm run check
 ```
 
 ## Деплой на Vercel
-
 1. Добавьте в Vercel Environment Variables:
    - `BOT_TOKEN`
-   - `WEBHOOK_SECRET` (рекомендуется)
+   - `VERCEL_URL` (нужен для `npm run set-subscriptions`)
+   - `MAX_WEBHOOK_SECRET` (рекомендуется)
 2. Выполните деплой:
 
 ```bash
 vercel deploy --prod
 ```
 
-3. Зарегистрируйте webhook:
+3. Зарегистрируйте subscriptions для MAX:
 
 ```bash
-npm run set-webhook
+npm run set-subscriptions
 ```
 
-Telegram будет отправлять обновления на:
+MAX будет отправлять обновления на:
 `https://<your-vercel-app>/api/webhook`
 
 ## Расширение бота
 
 - Новые тексты: `src/content/messages.js`
-- Новые кнопки/регионы: `src/ui/keyboards.js`
-- Новые сценарии: `src/handlers/registerHandlers.js`
-- Новые middleware: `src/middlewares/*`
+- Новые inline-клавиатуры и payload'ы: `src/max/ui/keyboards.js`
+- Новые сценарии: `src/max/handlers/registerHandlers.js`
+- Новые middleware/утилиты: `src/max/middlewares/*`, `src/max/utils/*`

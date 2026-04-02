@@ -4,13 +4,13 @@
   "description": "Production-ready Telegram-бот для фотостудии Татьяны Денисенко",
   "main": "src/bot.js",
   "scripts": {
-    "start": "node local.js",
-    "dev": "node local.js",
-    "set-webhook": "node scripts/set-webhook.js",
-    "check": "node -e \"process.env.BOT_TOKEN = process.env.BOT_TOKEN || 'test_token'; require('./src/bot'); console.log('bot modules: ok')\""
+    "start": "node max-local.js",
+    "dev": "node max-local.js",
+    "set-subscriptions": "node scripts/set-subscriptions-max.js",
+    "check": "node -e \"process.env.BOT_TOKEN = process.env.BOT_TOKEN || 'test_token'; require('./src/max/bot'); console.log('max bot modules: ok')\""
   },
   "dependencies": {
-    "telegraf": "^4.16.3",
+    "@maxhub/max-bot-api": "^0.2.2",
     "dotenv": "^16.4.5"
   },
   "engines": {

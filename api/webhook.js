@@ -1,11 +1,12 @@
-const bot = require('../src/bot');
+const bot = require('../src/max/bot');
 const { getEnv } = require('../src/config/env');
 
 function isValidWebhookSecret(req, expected) {
   if (!expected) {
     return true;
   }
-  const actual = req.headers['x-telegram-bot-api-secret-token'];
+  // MAX passes the secret in this header for webhook requests.
+  const actual = req.headers['x-max-bot-api-secret'];
   return actual === expected;
 }
 
@@ -22,8 +23,9 @@ module.exports = async (req, res) => {
 
   try {
     const { webhookSecret } = getEnv();
+    const expectedSecret = process.env.MAX_WEBHOOK_SECRET || webhookSecret;
 
-    if (!isValidWebhookSecret(req, webhookSecret)) {
+    if (!isValidWebhookSecret(req, expectedSecret)) {
       res.status(401).json({ ok: false, error: 'Invalid webhook secret' });
       return;
     }
