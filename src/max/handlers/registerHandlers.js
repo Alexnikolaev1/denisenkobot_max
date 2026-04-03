@@ -1,6 +1,10 @@
 const { REGIONS, keyboards } = require('../ui/keyboards');
 const { MESSAGES } = require('../../content/messages');
-const { getStartPhotoAttachment, getContactsPhotoAttachment } = require('../utils/sendImages');
+const {
+  getStartPhotoAttachment,
+  getContactsPhotoAttachment,
+  isValidImageAttachmentJson,
+} = require('../utils/sendImages');
 
 function escapeHtml(text) {
   return String(text)
@@ -28,7 +32,7 @@ async function handleStart(ctx) {
   }
 
   const attachments = [];
-  if (startPhoto) attachments.push(startPhoto);
+  if (startPhoto && isValidImageAttachmentJson(startPhoto)) attachments.push(startPhoto);
   attachments.push(keyboards.startInlineMenu);
 
   await sendHtml(ctx, MESSAGES.start(getUserName(ctx)), { attachments });
@@ -97,7 +101,7 @@ function registerHandlers(bot) {
     await ctx.answerOnCallback();
     const contactsPhoto = await getContactsPhotoAttachment(ctx);
     const attachments = [];
-    if (contactsPhoto) attachments.push(contactsPhoto);
+    if (contactsPhoto && isValidImageAttachmentJson(contactsPhoto)) attachments.push(contactsPhoto);
     attachments.push(keyboards.contactsInlineLinks);
     await sendHtml(ctx, MESSAGES.contactDirect, { attachments });
     await sendHtml(ctx, MESSAGES.mainMenuPrompt, { attachments: [keyboards.backMenu] });
@@ -107,7 +111,7 @@ function registerHandlers(bot) {
     await ctx.answerOnCallback();
     const contactsPhoto = await getContactsPhotoAttachment(ctx);
     const attachments = [];
-    if (contactsPhoto) attachments.push(contactsPhoto);
+    if (contactsPhoto && isValidImageAttachmentJson(contactsPhoto)) attachments.push(contactsPhoto);
     attachments.push(keyboards.contactsInlineLinks);
     await sendHtml(ctx, MESSAGES.contacts, { attachments });
     await sendHtml(ctx, MESSAGES.mainMenuPrompt, { attachments: [keyboards.backMenu] });

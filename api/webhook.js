@@ -18,7 +18,11 @@ function isValidWebhookSecret(req, expected) {
 
 module.exports = async (req, res) => {
   if (req.method === 'GET') {
-    res.status(200).json({ status: 'ok', service: 'denisenko-bot' });
+    res.status(200).json({
+      status: 'ok',
+      service: 'denisenko-bot',
+      build: process.env.VERCEL_GIT_COMMIT_SHA || 'local',
+    });
     return;
   }
 
