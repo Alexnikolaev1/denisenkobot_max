@@ -1,6 +1,7 @@
 require('dotenv').config();
 
-const bot = require('./src/max/bot');
+const getBot = require('./src/max/bot');
+const bot = getBot();
 
 console.log('🤖 MAX-бот запускается в режиме long polling...');
 console.log('Нажмите Ctrl+C для остановки.\n');

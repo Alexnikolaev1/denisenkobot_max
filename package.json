@@ -7,7 +7,7 @@
     "start": "node max-local.js",
     "dev": "node max-local.js",
     "set-subscriptions": "node scripts/set-subscriptions-max.js",
-    "check": "node -e \"process.env.BOT_TOKEN = process.env.BOT_TOKEN || 'test_token'; require('./src/max/bot'); console.log('max bot modules: ok')\""
+    "check": "node -e \"process.env.BOT_TOKEN = process.env.BOT_TOKEN || 'test_token'; require('./src/max/bot')(); console.log('max bot modules: ok')\""
   },
   "dependencies": {
     "@maxhub/max-bot-api": "^0.2.2",

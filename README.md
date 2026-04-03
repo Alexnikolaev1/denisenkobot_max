@@ -46,6 +46,10 @@ cp .env.example .env
 
 **Важно:** в Vercel проект `denisenkobotmax` должен быть привязан к репозиторию GitHub **`Alexnikolaev1/denisenkobot_max`** (без «_» в конце). Репозиторий `denisenkobot_max_` — это отдельный форк; если деплой идёт только из него, прод на Vercel остаётся со старым кодом.
 
+**Проверка, что прод обновился:** откройте в браузере `https://denisenkobotmax.vercel.app/api/webhook` — в JSON должны быть поля `build` и `handler` (например `lazy-bot-max-text-only`). Если их нет, деплой на Vercel всё ещё старый.
+
+**Если Git из Vercel не обновляет прод:** в [Tokens](https://vercel.com/account/tokens) создайте токен и добавьте в GitHub репозитория секрет **`VERCEL_TOKEN`**. После пуша в `main` сработает workflow `.github/workflows/vercel-deploy.yml` и задеплоит проект принудительно.
+
 ## Локальный запуск
 
 ```bash

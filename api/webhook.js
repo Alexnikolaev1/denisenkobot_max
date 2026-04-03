@@ -1,7 +1,7 @@
-const bot = require('../src/max/bot');
+const getBot = require('../src/max/bot');
 const { getEnv } = require('../src/config/env');
 
-async function ensureBotInfo() {
+async function ensureBotInfo(bot) {
   if (!bot.botInfo) {
     bot.botInfo = await bot.api.getMyInfo();
   }
@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
       status: 'ok',
       service: 'denisenko-bot',
       build: process.env.VERCEL_GIT_COMMIT_SHA || 'local',
-      handler: 'max-text-only',
+      handler: 'lazy-bot-max-text-only',
     });
     return;
   }
@@ -41,7 +41,8 @@ module.exports = async (req, res) => {
       return;
     }
 
-    await ensureBotInfo();
+    const bot = getBot();
+    await ensureBotInfo(bot);
     await bot.handleUpdate(req.body);
     res.status(200).json({ ok: true });
   } catch (error) {
