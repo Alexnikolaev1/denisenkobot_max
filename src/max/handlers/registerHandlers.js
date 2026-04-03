@@ -1,10 +1,5 @@
 const { REGIONS, keyboards } = require('../ui/keyboards');
 const { MESSAGES } = require('../../content/messages');
-const {
-  getStartPhotoAttachment,
-  getContactsPhotoAttachment,
-  isValidImageAttachmentJson,
-} = require('../utils/sendImages');
 
 function escapeHtml(text) {
   return String(text)
@@ -15,7 +10,6 @@ function escapeHtml(text) {
 }
 
 function getUserName(ctx) {
-  // MAX: user data в `ctx.user` (getter).
   const raw = ctx.user?.name || 'дорогой гость';
   return escapeHtml(raw);
 }
@@ -24,18 +18,7 @@ async function handleStart(ctx) {
   ctx.session.region = undefined;
   ctx.session.regionName = undefined;
 
-  let startPhoto = null;
-  try {
-    startPhoto = await getStartPhotoAttachment(ctx);
-  } catch (err) {
-    console.error('[start-photo]', err);
-  }
-
-  const attachments = [];
-  if (startPhoto && isValidImageAttachmentJson(startPhoto)) attachments.push(startPhoto);
-  attachments.push(keyboards.startInlineMenu);
-
-  await sendHtml(ctx, MESSAGES.start(getUserName(ctx)), { attachments });
+  await sendHtml(ctx, MESSAGES.start(getUserName(ctx)), { attachments: [keyboards.startInlineMenu] });
 }
 
 function requireRegion(ctx, next) {
@@ -61,7 +44,6 @@ async function handleRegion(ctx, region) {
 }
 
 function registerHandlers(bot) {
-  // MAX при первом входе в чат шлёт `bot_started`, а не сообщение с текстом /start.
   bot.on('bot_started', handleStart);
   bot.command('start', handleStart);
 
@@ -94,26 +76,20 @@ function registerHandlers(bot) {
   bot.action('price', requireRegion, async (ctx) => {
     await ctx.answerOnCallback();
     const isZernograd = ctx.session?.region === 'zernograd';
-    await sendHtml(ctx, isZernograd ? MESSAGES.priceZernograd : MESSAGES.priceMain, { attachments: [keyboards.backWithContactMenu] });
+    await sendHtml(ctx, isZernograd ? MESSAGES.priceZernograd : MESSAGES.priceMain, {
+      attachments: [keyboards.backWithContactMenu],
+    });
   });
 
   bot.action('contact_owner', requireRegion, async (ctx) => {
     await ctx.answerOnCallback();
-    const contactsPhoto = await getContactsPhotoAttachment(ctx);
-    const attachments = [];
-    if (contactsPhoto && isValidImageAttachmentJson(contactsPhoto)) attachments.push(contactsPhoto);
-    attachments.push(keyboards.contactsInlineLinks);
-    await sendHtml(ctx, MESSAGES.contactDirect, { attachments });
+    await sendHtml(ctx, MESSAGES.contactDirect, { attachments: [keyboards.contactsInlineLinks] });
     await sendHtml(ctx, MESSAGES.mainMenuPrompt, { attachments: [keyboards.backMenu] });
   });
 
   bot.action('contacts', requireRegion, async (ctx) => {
     await ctx.answerOnCallback();
-    const contactsPhoto = await getContactsPhotoAttachment(ctx);
-    const attachments = [];
-    if (contactsPhoto && isValidImageAttachmentJson(contactsPhoto)) attachments.push(contactsPhoto);
-    attachments.push(keyboards.contactsInlineLinks);
-    await sendHtml(ctx, MESSAGES.contacts, { attachments });
+    await sendHtml(ctx, MESSAGES.contacts, { attachments: [keyboards.contactsInlineLinks] });
     await sendHtml(ctx, MESSAGES.mainMenuPrompt, { attachments: [keyboards.backMenu] });
   });
 
@@ -134,4 +110,3 @@ function registerHandlers(bot) {
 }
 
 module.exports = { registerHandlers };
-

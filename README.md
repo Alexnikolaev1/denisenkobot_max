@@ -21,8 +21,6 @@ denisenko-bot/
 │   │   └── memorySession.js     # In-memory сессии + TTL cleanup
 │   ├── ui/
 │   │   └── keyboards.js         # Inline клавиатуры и payload'ы
-│   └── utils/
-│       └── sendImages.js        # uploadImage + кэш вложений
 ├── max-local.js                   # Локальный long polling запуск
 ├── vercel.json
 ├── .env.example
@@ -46,7 +44,7 @@ cp .env.example .env
 
 Имя проекта в Vercel может отличаться от имени репозитория на GitHub — важен именно **Production URL** из панели Vercel (у тебя сейчас `denisenkobotmax.vercel.app`).
 
-Картинки для бота (`main.jpg`, `main2.jpg`) положите в каталог **`public/`**, чтобы они открывались по адресу `https://<ваш-домен>/main.jpg`. На Vercel бот сначала пробует загрузить изображение по этому URL в API MAX — так надёжнее, чем только локальный файл в serverless.
+**Важно:** в Vercel проект `denisenkobotmax` должен быть привязан к репозиторию GitHub **`Alexnikolaev1/denisenkobot_max`** (без «_» в конце). Репозиторий `denisenkobot_max_` — это отдельный форк; если деплой идёт только из него, прод на Vercel остаётся со старым кодом.
 
 ## Локальный запуск
 
