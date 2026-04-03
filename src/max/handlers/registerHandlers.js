@@ -20,13 +20,18 @@ async function handleStart(ctx) {
   ctx.session.region = undefined;
   ctx.session.regionName = undefined;
 
+  let startPhoto = null;
   try {
-    const startPhoto = await getStartPhotoAttachment(ctx);
-    await sendPhotoAttachmentIfExists(ctx, startPhoto);
+    startPhoto = await getStartPhotoAttachment(ctx);
   } catch (err) {
     console.error('[start-photo]', err);
   }
-  await sendHtml(ctx, MESSAGES.start(getUserName(ctx)), { attachments: [keyboards.startInlineMenu] });
+
+  const attachments = [];
+  if (startPhoto) attachments.push(startPhoto);
+  attachments.push(keyboards.startInlineMenu);
+
+  await sendHtml(ctx, MESSAGES.start(getUserName(ctx)), { attachments });
 }
 
 function requireRegion(ctx, next) {
@@ -41,11 +46,6 @@ async function sendHtml(ctx, html, extra = {}) {
     format: 'html',
     ...extra,
   });
-}
-
-async function sendPhotoAttachmentIfExists(ctx, attachment) {
-  if (!attachment) return;
-  await ctx.reply('', { attachments: [attachment] });
 }
 
 async function handleRegion(ctx, region) {
@@ -96,16 +96,20 @@ function registerHandlers(bot) {
   bot.action('contact_owner', requireRegion, async (ctx) => {
     await ctx.answerOnCallback();
     const contactsPhoto = await getContactsPhotoAttachment(ctx);
-    await sendPhotoAttachmentIfExists(ctx, contactsPhoto);
-    await sendHtml(ctx, MESSAGES.contactDirect, { attachments: [keyboards.contactsInlineLinks] });
+    const attachments = [];
+    if (contactsPhoto) attachments.push(contactsPhoto);
+    attachments.push(keyboards.contactsInlineLinks);
+    await sendHtml(ctx, MESSAGES.contactDirect, { attachments });
     await sendHtml(ctx, MESSAGES.mainMenuPrompt, { attachments: [keyboards.backMenu] });
   });
 
   bot.action('contacts', requireRegion, async (ctx) => {
     await ctx.answerOnCallback();
     const contactsPhoto = await getContactsPhotoAttachment(ctx);
-    await sendPhotoAttachmentIfExists(ctx, contactsPhoto);
-    await sendHtml(ctx, MESSAGES.contacts, { attachments: [keyboards.contactsInlineLinks] });
+    const attachments = [];
+    if (contactsPhoto) attachments.push(contactsPhoto);
+    attachments.push(keyboards.contactsInlineLinks);
+    await sendHtml(ctx, MESSAGES.contacts, { attachments });
     await sendHtml(ctx, MESSAGES.mainMenuPrompt, { attachments: [keyboards.backMenu] });
   });
 
