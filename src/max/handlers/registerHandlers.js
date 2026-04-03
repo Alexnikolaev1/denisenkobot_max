@@ -2,9 +2,31 @@ const { REGIONS, keyboards } = require('../ui/keyboards');
 const { MESSAGES } = require('../../content/messages');
 const { getStartPhotoAttachment, getContactsPhotoAttachment } = require('../utils/sendImages');
 
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 function getUserName(ctx) {
   // MAX: user data в `ctx.user` (getter).
-  return ctx.user?.name || 'дорогой гость';
+  const raw = ctx.user?.name || 'дорогой гость';
+  return escapeHtml(raw);
+}
+
+async function handleStart(ctx) {
+  ctx.session.region = undefined;
+  ctx.session.regionName = undefined;
+
+  try {
+    const startPhoto = await getStartPhotoAttachment(ctx);
+    await sendPhotoAttachmentIfExists(ctx, startPhoto);
+  } catch (err) {
+    console.error('[start-photo]', err);
+  }
+  await sendHtml(ctx, MESSAGES.start(getUserName(ctx)), { attachments: [keyboards.startInlineMenu] });
 }
 
 function requireRegion(ctx, next) {
@@ -35,15 +57,9 @@ async function handleRegion(ctx, region) {
 }
 
 function registerHandlers(bot) {
-  bot.command('start', async (ctx) => {
-    // Сбрасываем контекст выбора региона для нового знакомства.
-    ctx.session.region = undefined;
-    ctx.session.regionName = undefined;
-
-    const startPhoto = await getStartPhotoAttachment(ctx);
-    await sendPhotoAttachmentIfExists(ctx, startPhoto);
-    await sendHtml(ctx, MESSAGES.start(getUserName(ctx)), { attachments: [keyboards.startInlineMenu] });
-  });
+  // MAX при первом входе в чат шлёт `bot_started`, а не сообщение с текстом /start.
+  bot.on('bot_started', handleStart);
+  bot.command('start', handleStart);
 
   bot.action('start_intro', async (ctx) => {
     await ctx.answerOnCallback();

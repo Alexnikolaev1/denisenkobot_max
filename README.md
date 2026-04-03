@@ -41,8 +41,10 @@ cp .env.example .env
 - `BOT_TOKEN`
 
 Опциональные:
-- `VERCEL_URL` (нужен для `npm run set-subscriptions`)
+- `VERCEL_URL` (нужен для `npm run set-subscriptions`; для твоего деплоя: `https://denisenkobotmax.vercel.app`)
 - `MAX_WEBHOOK_SECRET` (рекомендуется для защиты MAX webhook)
+
+Имя проекта в Vercel может отличаться от имени репозитория на GitHub — важен именно **Production URL** из панели Vercel (у тебя сейчас `denisenkobotmax.vercel.app`).
 
 ## Локальный запуск
 
@@ -75,7 +77,7 @@ npm run set-subscriptions
 ```
 
 MAX будет отправлять обновления на:
-`https://<your-vercel-app>/api/webhook`
+`https://denisenkobotmax.vercel.app/api/webhook`
 
 ## Расширение бота
 

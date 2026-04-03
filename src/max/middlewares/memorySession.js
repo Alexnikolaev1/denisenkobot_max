@@ -18,6 +18,7 @@ function createMemorySession(options = {}) {
     // MAX: `ctx.user()` comes from update.message.sender or update.callback.user
     const userId = ctx.user?.user_id ?? ctx.user?.id ?? ctx.chatId;
     if (!userId) {
+      ctx.session = {};
       return next();
     }
 
