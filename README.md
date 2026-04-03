@@ -44,11 +44,11 @@ cp .env.example .env
 
 Имя проекта в Vercel может отличаться от имени репозитория на GitHub — важен именно **Production URL** из панели Vercel (у тебя сейчас `denisenkobotmax.vercel.app`).
 
-**Важно:** в Vercel проект `denisenkobotmax` должен быть привязан к репозиторию GitHub **`Alexnikolaev1/denisenkobot_max`** (без «_» в конце). Репозиторий `denisenkobot_max_` — это отдельный форк; если деплой идёт только из него, прод на Vercel остаётся со старым кодом.
+**Важно (Git → Vercel):** убедитесь в панели Vercel (**Project → Settings → Git**), к какому репозиторию привязан проект. Если там **`Alexnikolaev1/denisenkobot_max_`** (с «_» в конце), то **автодеплой идёт только от пушей в этот репозиторий**. Пуши в другой репозиторий (например `denisenkobot_max` без «_») **не обновят** этот проект на Vercel, даже если код одинаковый.
 
-**Проверка, что прод обновился:** откройте в браузере `https://denisenkobotmax.vercel.app/api/webhook` — в JSON должны быть поля `build` и `handler` (например `lazy-bot-max-text-only`). Если их нет, деплой на Vercel всё ещё старый.
+**Проверка, что прод обновился:** откройте в браузере `https://denisenkobotmax.vercel.app/api/webhook` — в JSON должны быть поля `build` и `handler` (например `lazy-bot-max-text-only`). Если их нет, на проде всё ещё старый билд.
 
-**Если Git из Vercel не обновляет прод:** в [Tokens](https://vercel.com/account/tokens) создайте токен и добавьте в GitHub репозитория секрет **`VERCEL_TOKEN`**. После пуша в `main` сработает workflow `.github/workflows/vercel-deploy.yml` и задеплоит проект принудительно.
+**GitHub Actions:** секрет **`VERCEL_TOKEN`** добавьте в тот репозиторий, из которого реально идут деплои (тот же, что подключён к Vercel). После пуша в `main` сработает `.github/workflows/vercel-deploy.yml`.
 
 ## Локальный запуск
 

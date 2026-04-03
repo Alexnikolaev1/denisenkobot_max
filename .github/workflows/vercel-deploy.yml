@@ -1,5 +1,6 @@
-# Деплой на Vercel при пуше в main. Нужен секрет VERCEL_TOKEN:
-# https://vercel.com/account/tokens → создать токен → GitHub → repo → Settings → Secrets → Actions → VERCEL_TOKEN
+# Деплой на Vercel при пуше в main. Секрет VERCEL_TOKEN добавьте в тот же репозиторий GitHub,
+# который привязан к проекту в Vercel (часто это Alexnikolaev1/denisenkobot_max_).
+# Токен: https://vercel.com/account/tokens → GitHub → Settings → Secrets → Actions → VERCEL_TOKEN
 
 name: Deploy Vercel Production
 
